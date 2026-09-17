@@ -1,0 +1,6 @@
+interface:
+  display_name: "真人旅拍 × 实景奇想"
+  short_description: "保留真人摄影质感，只让二维幻想进入真实旅行场景"
+  default_prompt: "Use $real-person-fantasy-mix to keep the photographed person realistic while adding a richly integrated flat 2D fantasy world."
+policy:
+  allow_implicit_invocation: true
