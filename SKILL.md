@@ -11,6 +11,8 @@ description: 将真人旅行、街拍或生活照片制作成“摄影人物与�
 
 生成前先读 [视觉系统](references/visual-system.md)。写提示词时使用 [提示词模板](references/prompt-template.md)。生成后按 [成图检查](references/quality.md) 核对。
 
+照片具有大面积天空、水面、山野、远景纵深，或用户明确希望画面更澄澈、浪漫、电影化、诗意时，再读取 [澄澈电影奇想](references/luminous-cinematic-wonder.md)。这是原创的审美模块，不是艺术家模仿模板；近距离室内、美食、商品或以局部人物为主且缺少环境纵深时，不要机械套用。
+
 ## 运行环境路由
 
 仅在以下任一条件明确成立时，额外读取并执行 [豆包运行时适配层](references/doubao-adapter.md)：

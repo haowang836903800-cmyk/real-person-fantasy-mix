@@ -34,6 +34,9 @@ C) [plant/path] grows from [actual surface] and alternates front/back.
 STYLE:
 Only new fantasy elements are flat 2D editorial illustration: clean contours, opaque solid colors, minimal cel shading and optional restrained print grain. The person and environment remain photography.
 
+OPTIONAL AESTHETIC MODE:
+When routed to `luminous-cinematic-wonder.md`, insert its compact module here after adapting it to the photograph. Omit this block for scenes that do not qualify; never use an artist name as a shortcut.
+
 CONSTRAINTS:
 No title, added words, new logos, QR code, watermark or border.
 Avoid illustrated person, cartoon skin, painted clothing, changed identity or pose, 3D, clay, vinyl toy, photoreal fantasy creature, white sticker outlines, full-image cartoon conversion and repeated same-size icons.
