@@ -11,7 +11,10 @@ Image 1 is the sole edit target and authority for the person, scene and composit
 Image 2, if present, is only a style reference for the new illustration layer. Do not copy its person, clothing, pose, architecture, text or layout.
 
 CRITICAL PERSON LOCK — highest priority:
-Keep the photographed person fully realistic and unchanged. Preserve the exact face, skin texture, hair strands, eyewear, clothing fabric and folds, body proportions, pose, hands, feet, crop and original shadow. Do not redraw, stylize, retouch, beautify, replace, move, rescale or outline the person. No fantasy paint may cover identity features or clothing.
+Keep the actual photographed person from Image 1, not a regenerated likeness. Preserve the source pixels and exact face, pores and skin texture, hair strands and hairline, eyewear, clothing fabric, folds and patterns, body proportions, pose, hands, feet, crop and original shadow. Do not redraw, reconstruct, stylize, retouch, beautify, denoise, relight, replace, move, rescale or outline the person. Do not synthesize new pixels inside the protected person silhouette. If masking or layered compositing is available, exclude the person and original shadow from generative editing and composite the original photographic pixels back on top. No fantasy paint may cover identity features, skin or clothing.
+
+PERMITTED COLOR WORK:
+Restrained global color grading is allowed: white balance, exposure, contrast, curves, color tone, saturation and grain may be adjusted consistently across the photograph. Apply only the same non-generative color transform to the original person pixels. Preserve local skin shading, pores, hair, fabric, camera noise, sharpness and depth of field. No local beauty filter, skin smoothing, face enhancement, invented rim light or portrait relighting.
 
 SCENE LOCK:
 Preserve [list 3–5 actual anchors], perspective, lighting, weather, depth of field and photographic textures. Do not globally repaint the photograph.
@@ -48,7 +51,7 @@ Avoid illustrated person, cartoon skin, painted clothing, changed identity or po
 Image 1 is the current fantasy composite and edit target.
 Image 2 is the original photograph and authoritative source for the person.
 
-Restore the entire person from Image 2 into Image 1 as a genuinely photographic, unillustrated subject. Preserve the exact face, hair, skin, eyewear, clothing, limbs, pose, scale, position, crop and original shadow. Remove drawn contours, cel shading, painted texture and cartoon edges from the person.
+Do not regenerate, reconstruct or enhance the person. Use a mask to composite the original person pixels and original shadow from Image 2 back into Image 1. Preserve the exact face, pores, hair strands, skin, eyewear, clothing texture and folds, limbs, pose, scale, position, crop, sharpness, depth of field, grain and camera noise. Remove any generated person pixels, beauty retouching, drawn contours, cel shading, painted texture, invented light and cartoon edges.
 
-Keep all satisfactory fantasy elements and the background from Image 1. Move any conflicting fantasy segment behind the restored photographic silhouette. Change nothing else.
+Keep all satisfactory fantasy elements and the background from Image 1. Move any conflicting fantasy segment behind the restored original photographic silhouette. A restrained global color grade may be applied consistently after compositing; do not locally retouch the person. Change nothing else.
 ```
