@@ -20,7 +20,15 @@ SCENE LOCK:
 Preserve [list 3–5 actual anchors], perspective, lighting, weather, depth of field and photographic textures. Do not globally repaint the photograph.
 
 LARGE FANTASY SUBJECT:
-[one scene-specific subject, location, scale, palette and movement]
+[one scene-specific subject, environmental material source, location, scale, palette and movement; do not copy the subject matter of a style reference]
+
+SCENE-SPECIFIC VISUAL BLUEPRINT:
+Story verb: [meeting / departure / guiding / waiting / crossing / returning / another scene-specific action]
+Material relationship: [how the fantasy subject borrows shape, color or motion from actual cloud / water / foliage / architecture / steam / food]
+Visual path: [a continuous curve, light route, procession or gaze path that leads from the main wonder back to the photographed person]
+Depth plan: [foreground real contact] / [midground person interaction] / [background main wonder]
+Density map: [highest-detail zones] / [medium-detail connectors] / [quiet negative space]
+Single light event: [one event consistent with the source-photo light direction]
 
 MEDIUM STORY ELEMENTS:
 1) ...
@@ -35,7 +43,7 @@ B) [character] is partly occluded by [actual rail/rock/wall].
 C) [plant/path] grows from [actual surface] and alternates front/back.
 
 STYLE:
-Only new fantasy elements are flat 2D editorial illustration: clean contours, opaque solid colors, minimal cel shading and optional restrained print grain. The person and environment remain photography.
+Only new fantasy elements use cinematic 2D hand-painted editorial illustration: clear large shapes, clean contours, layered cel painting, controlled soft gradients, optional restrained grain, and a four-part light structure of base color, lit plane, shadow plane and translucent/highlight accent. Focus and contact edges are crisp; distant and backlit edges are softer. The person and environment remain photography.
 
 OPTIONAL AESTHETIC MODE:
 When routed to `luminous-cinematic-wonder.md`, insert its compact module here after adapting it to the photograph. Omit this block for scenes that do not qualify; never use an artist name as a shortcut.
