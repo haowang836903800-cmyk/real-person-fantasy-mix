@@ -15,7 +15,7 @@ description: 将真人旅行、街拍或生活照片制作成“摄影人物与�
 
 ## 运行环境路由
 
-仅在以下任一条件明确成立时，额外读取并执行 [豆包运行时适配层](references/doubao-adapter.md)、[豆包分层制作流程](references/doubao-production-workflow.md)、[豆包首轮视觉语法](references/doubao-v5-visual-grammar.md) 与 [豆包首轮异质样例](references/doubao-first-pass-examples.md)：
+仅在以下任一条件明确成立时，额外读取并执行 [豆包运行时适配层](references/doubao-adapter.md)、[豆包生图模型与质量路由](references/doubao-model-routing.md)、[豆包分层制作流程](references/doubao-production-workflow.md)、[豆包首轮视觉语法](references/doubao-v5-visual-grammar.md) 与 [豆包首轮异质样例](references/doubao-first-pass-examples.md)：
 
 - 当前宿主、运行时、产品或图像生成工具明确标识为“豆包”或“Doubao”；
 - 图像生成 provider / tool 名称明确包含“豆包”或“Doubao”；
@@ -38,7 +38,9 @@ description: 将真人旅行、街拍或生活照片制作成“摄影人物与�
 
 默认把人物及其原有影子视为受保护的源图区域。工具支持遮罩或分层合成时，将该区域排除在生成式修改之外；幻想元素通过人物遮罩放到身后，人物最终来自原照片像素。只允许统一白平衡、曝光、对比度、色调和颗粒等非生成式调色，并保持皮肤、衣料、发丝与相机噪点的原始关系。
 
-工具不支持受保护区域时，最多进行一次生成式合成并立刻与原图检查。只要人物出现磨皮、塑料皮肤、重绘五官、发丝重建、眼睛或牙齿异常锐化、衣料纹理丢失、身体比例变化、轮廓光晕或局部噪点不一致，就不以“像本人”为由通过；应按 [严格真人锁定](references/real-person-lock.md) 使用原图人物遮罩恢复，而不是再次生成一个真人。
+当前环境可以运行本地脚本时，读取并执行 [像素安全合成](references/pixel-safe-compositing.md)。macOS 优先使用随 Skill 提供的 `scripts/macos_person_mask.sh` 与 `scripts/compose_fantasy.py`，生成透明前后景幻想层、恢复原照片人物像素并输出验证报告。只有报告显示保护区域零变化才能交付。
+
+工具不支持受保护区域、透明幻想层或本地像素合成时，不得制作或交付整图图生图版本。只要人物出现磨皮、塑料皮肤、重绘五官、发丝重建、眼睛或牙齿异常锐化、衣料纹理丢失、身体比例变化、轮廓光晕或局部噪点不一致，就不以“像本人”为由通过；应按 [严格真人锁定](references/real-person-lock.md) 与 [像素安全合成](references/pixel-safe-compositing.md) 使用原图人物遮罩恢复，而不是再次生成一个真人。
 
 ## 构图方法
 

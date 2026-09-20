@@ -50,7 +50,7 @@ When routed to `luminous-cinematic-wonder.md`, insert its compact module here af
 
 CONSTRAINTS:
 No title, added words, new logos, QR code, watermark or border.
-Avoid illustrated person, cartoon skin, painted clothing, changed identity or pose, 3D, clay, vinyl toy, photoreal fantasy creature, white sticker outlines, full-image cartoon conversion and repeated same-size icons.
+Avoid illustrated person, beauty-poster face, cartoon skin, painted clothing, changed identity or pose, 3D, clay, vinyl toy, glass or golden-wireframe fantasy subject, game-effect light trails, webtoon or motion-comic poster aesthetics, photoreal fantasy creature, white sticker outlines, full-image cartoon conversion and repeated same-size icons.
 ```
 
 ## 人物恢复修正
