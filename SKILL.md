@@ -38,7 +38,7 @@ description: 将真人旅行、街拍或生活照片制作成“摄影人物与�
 
 默认把人物及其原有影子视为受保护的源图区域，并向外建立禁止绘制安全区。人物遮罩默认只用于从幻想层 alpha 中剔除该区域，不用于把人物剪下、移动或粘贴回来。最终画布始终从完整原照片开始。只允许统一白平衡、曝光、对比度、色调和颗粒等非生成式调色，并保持皮肤、衣料、发丝与相机噪点的原始关系。
 
-当前环境可以运行本地脚本时，读取并执行 [摄影底板 2.5D 空间增量](references/additive-spatial-augmentation.md) 与 [像素安全合成](references/pixel-safe-compositing.md)。macOS 优先使用随 Skill 提供的 `scripts/macos_person_mask.sh` 与 `scripts/compose_fantasy.py`。默认保留完整原照片，只叠加避开真人安全区的独立透明幻想对象；不得把人物剪下再贴回。只有报告显示保护区域零变化才能交付。
+当前环境可以运行本地脚本时，读取并执行 [摄影底板 2.5D 空间增量](references/additive-spatial-augmentation.md)、[空间融合合同](references/spatial-integration-contract.md) 与 [像素安全合成](references/pixel-safe-compositing.md)。macOS 优先使用随 Skill 提供的 `scripts/macos_person_mask.sh`、`scripts/build_spatial_layer.py` 与 `scripts/compose_fantasy.py`。默认保留完整原照片，只叠加避开真人安全区、完成真实落点与空间融合的独立透明幻想对象；不得把人物剪下再贴回。只有空间层报告和人物像素报告同时通过才能交付。
 
 工具不支持受保护区域、透明幻想层或本地像素合成时，不得制作或交付整图图生图版本。只要人物出现磨皮、塑料皮肤、重绘五官、发丝重建、眼睛或牙齿异常锐化、衣料纹理丢失、身体比例变化、轮廓光晕或局部噪点不一致，就不以“像本人”为由通过；应按 [严格真人锁定](references/real-person-lock.md) 与 [像素安全合成](references/pixel-safe-compositing.md) 使用原图人物遮罩恢复，而不是再次生成一个真人。
 
