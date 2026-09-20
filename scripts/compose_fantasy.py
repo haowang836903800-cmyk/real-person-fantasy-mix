@@ -80,11 +80,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--base", required=True, type=Path, help="authoritative original photograph")
     parser.add_argument("--person-mask", required=True, type=Path, help="white person / black background mask")
     parser.add_argument("--protect-mask", action="append", default=[], type=Path, help="additional white protected area")
-    parser.add_argument("--back", action="append", default=[], type=Path, help="RGBA fantasy layer behind the person")
-    parser.add_argument("--front", action="append", default=[], type=Path, help="RGBA foreground layer; clipped away from protected pixels")
+    parser.add_argument("--overlay", action="append", default=[], type=Path, help="RGBA additive fantasy object layer")
+    parser.add_argument("--back", action="append", default=[], type=Path, help="advanced mode: RGBA layer behind the person")
+    parser.add_argument("--front", action="append", default=[], type=Path, help="advanced mode: RGBA foreground layer")
+    parser.add_argument(
+        "--mode",
+        choices=("additive", "occlusion"),
+        default="additive",
+        help="additive clips every layer away from the person safety zone (default); occlusion restores source pixels",
+    )
     parser.add_argument("--output", required=True, type=Path, help="lossless .png output")
     parser.add_argument("--report", type=Path, help="optional JSON verification report")
-    parser.add_argument("--dilate", type=int, default=2, help="expand protected masks by this many pixels (default: 2)")
+    parser.add_argument(
+        "--safety-margin",
+        "--dilate",
+        dest="dilate",
+        type=int,
+        default=12,
+        help="expand the no-draw protection zone by this many pixels (default: 12)",
+    )
     parser.add_argument(
         "--max-overlay-coverage",
         type=float,
@@ -102,8 +116,12 @@ def main() -> int:
         fail("--dilate must be between 0 and 50")
     if not 0 < args.max_overlay_coverage <= 1:
         fail("--max-overlay-coverage must be in (0, 1]")
-    if not args.back and not args.front:
-        fail("provide at least one --back or --front transparent fantasy layer")
+    if not args.overlay and not args.back and not args.front:
+        fail("provide at least one --overlay, --back or --front transparent fantasy layer")
+    if args.mode == "additive" and (args.back or args.front):
+        fail("additive mode accepts only --overlay; use --mode occlusion explicitly for --back/--front")
+    if args.mode == "occlusion" and args.overlay:
+        fail("occlusion mode accepts --back/--front, not --overlay")
 
     source = open_oriented(args.base).convert("RGBA")
     masks = [load_mask(args.person_mask, source.size)]
@@ -113,21 +131,32 @@ def main() -> int:
     result = source.copy()
     coverages: dict[str, float] = {}
 
-    for path in args.back:
-        layer, coverage = load_overlay(path, source.size, args.max_overlay_coverage)
-        coverages[str(path)] = coverage
-        result = Image.alpha_composite(result, layer)
+    if args.mode == "additive":
+        for path in args.overlay:
+            layer, coverage = load_overlay(path, source.size, args.max_overlay_coverage)
+            coverages[str(path)] = coverage
+            if ImageChops.multiply(layer.getchannel("A"), protected).getbbox() is not None:
+                fail(
+                    f"overlay {path} enters the person safety zone; reposition the isolated asset "
+                    "instead of clipping it around the person"
+                )
+            result = Image.alpha_composite(result, layer)
+    else:
+        for path in args.back:
+            layer, coverage = load_overlay(path, source.size, args.max_overlay_coverage)
+            coverages[str(path)] = coverage
+            result = Image.alpha_composite(result, layer)
 
-    result = restore_source(result, source, protected)
+        result = restore_source(result, source, protected)
 
-    for path in args.front:
-        layer, coverage = load_overlay(path, source.size, args.max_overlay_coverage)
-        coverages[str(path)] = coverage
-        safe_alpha = ImageChops.multiply(layer.getchannel("A"), ImageOps.invert(protected))
-        layer.putalpha(safe_alpha)
-        result = Image.alpha_composite(result, layer)
+        for path in args.front:
+            layer, coverage = load_overlay(path, source.size, args.max_overlay_coverage)
+            coverages[str(path)] = coverage
+            safe_alpha = ImageChops.multiply(layer.getchannel("A"), ImageOps.invert(protected))
+            layer.putalpha(safe_alpha)
+            result = Image.alpha_composite(result, layer)
 
-    result = restore_source(result, source, protected)
+        result = restore_source(result, source, protected)
     if changed_inside_mask(source, result, protected):
         fail("protected pixels changed; refusing to write a false-preservation result")
 
@@ -137,8 +166,10 @@ def main() -> int:
     protected_pixels = protected.histogram()[255]
     report = {
         "status": "PASS",
+        "mode": args.mode,
         "output": str(args.output),
         "dimensions": list(source.size),
+        "safety_margin_pixels": args.dilate,
         "protected_pixels": protected_pixels,
         "changed_protected_pixels": 0,
         "protected_pixels_exact": True,
