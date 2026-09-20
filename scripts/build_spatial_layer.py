@@ -20,6 +20,12 @@ DEPTH_DEFAULTS = {
     "near": {"opacity": 1.0, "blur": 0.0, "saturation": 1.0},
 }
 
+REQUIRED_STORY_FIELDS = ("verb", "fantasy_event", "visual_path", "person_relation")
+MIN_MAIN_ALPHA_FRACTION = 0.025
+MIN_TOTAL_ALPHA_FRACTION = 0.04
+MIN_MAIN_WIDTH_FRACTION = 0.28
+MIN_MAIN_HEIGHT_FRACTION = 0.22
+
 
 def fail(message: str) -> "NoReturn":
     raise SystemExit(f"error: {message}")
@@ -105,6 +111,60 @@ def validate_integration(item: dict, name: str) -> list[str]:
     return mechanisms
 
 
+def validate_fantasy_plan(manifest: dict, items: list[dict]) -> dict:
+    story = manifest.get("story") or {}
+    missing_story = [field for field in REQUIRED_STORY_FIELDS if not str(story.get(field, "")).strip()]
+    if missing_story:
+        fail(f"story is missing required fields: {missing_story}")
+    if not str(manifest.get("style_group", "")).strip():
+        fail("manifest needs one non-empty style_group for the complete fantasy layer")
+
+    roles = {"main": [], "support": [], "detail": []}
+    physical_items: list[str] = []
+    for index, item in enumerate(items):
+        name = item.get("name") or f"asset-{index + 1}"
+        role = item.get("role")
+        if role not in roles:
+            fail(f"asset {name} needs role: main, support or detail")
+        roles[role].append(name)
+        if not str(item.get("anchor", "")).strip():
+            fail(f"asset {name} needs a real-scene anchor description")
+        if not str(item.get("narrative_relation", "")).strip():
+            fail(f"asset {name} needs narrative_relation")
+        if item.get("shadow") or item.get("occlusion_masks"):
+            physical_items.append(name)
+
+    if len(roles["main"]) != 1:
+        fail(f"fantasy layer needs exactly one main asset, found {len(roles['main'])}")
+    if not 4 <= len(roles["support"]) <= 6:
+        fail(f"fantasy layer needs 4-6 support assets, found {len(roles['support'])}")
+    if len(physical_items) < 3:
+        fail(
+            "fantasy layer needs at least three assets with real occlusion or contact shadow; "
+            f"found {physical_items}"
+        )
+
+    main_item = next(item for item in items if item.get("role") == "main")
+    main_name = main_item.get("name") or "main"
+    if not str(main_item.get("impossible_change", "")).strip():
+        fail(f"main asset {main_name} needs impossible_change")
+    if not (main_item.get("shadow") or main_item.get("occlusion_masks")):
+        fail(f"main asset {main_name} must touch a real surface or be occluded by a real structure")
+
+    return {
+        "story": {field: str(story[field]).strip() for field in REQUIRED_STORY_FIELDS},
+        "style_group": str(manifest["style_group"]).strip(),
+        "main_asset": main_name,
+        "support_assets": roles["support"],
+        "physical_integration_assets": physical_items,
+    }
+
+
+def nonzero_alpha_pixels(image: Image.Image) -> int:
+    histogram = image.getchannel("A").histogram()
+    return image.width * image.height - histogram[0]
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Place isolated fantasy assets using an integration manifest.")
     parser.add_argument("--manifest", required=True, type=Path)
@@ -129,6 +189,9 @@ def main() -> int:
     items = manifest.get("assets") or []
     if not items:
         fail("manifest contains no assets")
+    fantasy_plan = validate_fantasy_plan(manifest, items)
+    main_visible_pixels = 0
+    main_placement: list[int] | None = None
 
     for index, item in enumerate(items):
         name = item.get("name") or f"asset-{index + 1}"
@@ -169,6 +232,16 @@ def main() -> int:
         if rotation:
             asset = asset.rotate(rotation, resample=Image.Resampling.BICUBIC, expand=True)
 
+        if item.get("role") == "main":
+            width_fraction = asset.width / width
+            height_fraction = asset.height / height
+            if width_fraction < MIN_MAIN_WIDTH_FRACTION and height_fraction < MIN_MAIN_HEIGHT_FRACTION:
+                fail(
+                    f"main asset {name} is too small for a thumbnail-visible fantasy event: "
+                    f"width={width_fraction:.3f}, height={height_fraction:.3f}; need width >= "
+                    f"{MIN_MAIN_WIDTH_FRACTION:.2f} or height >= {MIN_MAIN_HEIGHT_FRACTION:.2f}"
+                )
+
         x = int(item["x"])
         y = int(item["y"])
         if x >= width or y >= height or x + asset.width <= 0 or y + asset.height <= 0:
@@ -191,20 +264,52 @@ def main() -> int:
         for mask_value in item.get("occlusion_masks", []):
             mask = load_canvas_mask(resolve(root, mask_value), canvas.size)
             layer.putalpha(ImageChops.multiply(layer.getchannel("A"), ImageOps.invert(mask)))
+        visible_pixels = nonzero_alpha_pixels(layer)
+        if item.get("role") == "main":
+            main_visible_pixels = visible_pixels
+            main_placement = [x, y, asset.width, asset.height]
         canvas = Image.alpha_composite(canvas, layer)
         report_items.append(
             {
                 "name": name,
+                "role": item["role"],
                 "space": item["space"],
                 "depth": depth,
                 "placement": [x, y, asset.width, asset.height],
+                "visible_alpha_pixels": visible_pixels,
                 "integration_mechanisms": mechanisms,
             }
         )
 
+    canvas_pixels = width * height
+    main_alpha_fraction = main_visible_pixels / canvas_pixels
+    total_alpha_fraction = nonzero_alpha_pixels(canvas) / canvas_pixels
+    if main_alpha_fraction < MIN_MAIN_ALPHA_FRACTION:
+        fail(
+            f"main asset remains too visually weak after occlusion: alpha_fraction={main_alpha_fraction:.4f}, "
+            f"need >= {MIN_MAIN_ALPHA_FRACTION:.4f}"
+        )
+    if total_alpha_fraction < MIN_TOTAL_ALPHA_FRACTION:
+        fail(
+            f"fantasy layer is too sparse: alpha_fraction={total_alpha_fraction:.4f}, "
+            f"need >= {MIN_TOTAL_ALPHA_FRACTION:.4f}"
+        )
+
     args.output.parent.mkdir(parents=True, exist_ok=True)
     canvas.save(args.output, format="PNG", optimize=True)
-    report = {"status": "PASS", "output": str(args.output), "canvas": [width, height], "assets": report_items}
+    report = {
+        "status": "PASS",
+        "output": str(args.output),
+        "canvas": [width, height],
+        "fantasy_impact": {
+            "status": "PASS",
+            **fantasy_plan,
+            "main_placement": main_placement,
+            "main_alpha_fraction": round(main_alpha_fraction, 6),
+            "total_alpha_fraction": round(total_alpha_fraction, 6),
+        },
+        "assets": report_items,
+    }
     if args.report:
         args.report.parent.mkdir(parents=True, exist_ok=True)
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

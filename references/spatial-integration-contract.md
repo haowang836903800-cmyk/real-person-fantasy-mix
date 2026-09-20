@@ -51,10 +51,10 @@
 
 ## 可执行流程
 
-1. 生成一套风格统一、四周留透明余量的独立素材。
+1. 先执行 [幻想强度合同](fantasy-impact-contract.md)，确定一个足够醒目的主事件，再生成一套风格统一、四周留透明余量的独立素材。
 2. 为真实建筑、山脊、栏杆或树枝制作需要的遮挡蒙版。
-3. 创建空间清单，填写每个对象的 `space`、`depth`、真实坐标、尺寸、色温、阴影和遮挡蒙版。
-4. 使用 `scripts/build_spatial_layer.py` 生成画布对齐的透明空间层；脚本会拒绝缺少关键融合机制的对象和碰到素材边界的可疑裁切。
+3. 创建空间清单，填写故事、统一风格组，以及每个对象的 `role`、`anchor`、`narrative_relation`、`space`、`depth`、真实坐标、尺寸、色温、阴影和遮挡蒙版。
+4. 使用 `scripts/build_spatial_layer.py` 生成画布对齐的透明空间层；脚本会拒绝主奇观过小、支持情节不足、真实物理关系不足、缺少关键融合机制和碰到素材边界的可疑裁切。
 5. 使用 `scripts/compose_fantasy.py` 将空间层作为 `--overlay` 叠加到底板；人物安全区仍须零相交。
 6. 在 25% 缩略图和 100% 视图各检查一次：缩略图看主次与空间，100% 看边缘、阴影、色温和遮挡。
 
@@ -63,9 +63,19 @@
 ```json
 {
   "canvas": {"width": 1280, "height": 1920},
+  "story": {
+    "verb": "相遇",
+    "fantasy_event": "巨型城市伙伴从楼后探出并回应真人",
+    "visual_path": "楼后主奇观—沿街元素—真人",
+    "person_relation": "幻想元素朝真人视线和行进方向回应"
+  },
+  "style_group": "single-cinematic-2d-system",
   "assets": [
     {
       "name": "ground-companion",
+      "role": "support",
+      "anchor": "右侧真实路面",
+      "narrative_relation": "沿道路把视线引向真人",
       "path": "assets/companion.png",
       "space": "ground",
       "depth": "mid",
@@ -83,6 +93,10 @@
     },
     {
       "name": "distant-wonder",
+      "role": "main",
+      "anchor": "远处真实屋顶线后方",
+      "narrative_relation": "从楼后探身并朝真人所在道路望来",
+      "impossible_change": "建筑尺度的城市伙伴从街区结构中苏醒",
       "path": "assets/wonder.png",
       "space": "behind_structure",
       "depth": "far",

@@ -35,7 +35,7 @@
 
 ## 2.5D 放置规则
 
-所有放置还必须满足 [空间融合合同](spatial-integration-contract.md)。仅有坐标、缩放和透明背景不算空间融合。
+所有放置先满足 [幻想强度合同](fantasy-impact-contract.md)，再满足 [空间融合合同](spatial-integration-contract.md)。仅有坐标、缩放和透明背景不算空间融合；仅有几个已经融合的小物件也不算完整奇想。
 
 ### 地面
 
