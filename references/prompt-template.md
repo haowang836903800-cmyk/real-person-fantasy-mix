@@ -22,6 +22,17 @@ Preserve [list 3–5 actual anchors], perspective, lighting, weather, depth of f
 LARGE FANTASY SUBJECT:
 [one scene-specific subject, environmental material source, location, scale, palette and movement; do not copy the subject matter of a style reference]
 
+FANTASY WORLD ENGINE:
+Cultural grammar: [one dominant Eastern-inspired, Western-inspired or original cross-cultural grammar]
+Wonder archetype: [one main phenomenon]
+World law: [one altered law of reality]
+Material system: [one primary + one supporting material]
+Impact level: [restrained / cinematic / phantasmagoric]
+Origin anchor: [real object, weather feature or structure where the event begins]
+Whole-frame route: [origin → main wonder → behind/around person → second real zone → echo/reflection]
+Scene derivation: [how shape, color and movement come from this photograph]
+Anti-repetition: [motifs recently used and excluded]
+
 SCENE-SPECIFIC VISUAL BLUEPRINT:
 Story verb: [meeting / departure / guiding / waiting / crossing / returning / another scene-specific action]
 Material relationship: [how the fantasy subject borrows shape, color or motion from actual cloud / water / foliage / architecture / steam / food]
